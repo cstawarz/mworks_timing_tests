@@ -15,7 +15,17 @@
         <variable tag="eye_h" scope="global" logging="when_changed" default_value="0.0" type="float"></variable>
         <variable tag="eye_v" scope="global" logging="when_changed" default_value="0.0" type="float"></variable>
         <variable tag="eye_in_window" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
-        <variable tag="saccade" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="in_saccade" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="num_saccades" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="saccade" scope="global" logging="when_changed" default_value="0" type="integer">
+            <action type="if" tag="If entered a saccade" condition="saccade &amp;&amp; !in_saccade">
+                <action type="assignment" tag="Increment num_saccades" variable="num_saccades" value="num_saccades + 1"></action>
+            </action>
+            <action type="assignment" tag="Update in_saccade" variable="in_saccade" value="saccade"></action>
+        </variable>
+        <variable tag="saccade_entry_speed" scope="global" logging="when_changed" default_value="60.0" type="float"></variable>
+        <variable tag="saccade_exit_speed" scope="global" logging="when_changed" default_value="20.0" type="float"></variable>
+        <variable tag="eye_noise" scope="global" logging="when_changed" default_value="saccade_exit_speed * (double)data_interval / 1e6 / 2.0 * 0.95" type="float"></variable>
         <variable tag="ttl_out" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
         <variable tag="num_repeats" scope="global" logging="when_changed" default_value="10000" type="integer"></variable>
         <variable tag="num_done" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
@@ -29,7 +39,7 @@
     <filters tag="Filters">
         <filter type="boxcar_filter_1D" in1="eye_h_calibrated" out1="eye_h" width_samples="5" tag="eye_h_filter"></filter>
         <filter type="boxcar_filter_1D" in1="eye_v_calibrated" out1="eye_v" width_samples="5" tag="eye_v_filter"></filter>
-        <filter type="basic_eye_monitor" eyeh_calibrated="eye_h_calibrated" eyev_calibrated="eye_v_calibrated" eye_state="saccade" width_samples="5" saccade_entry_speed="60" saccade_exit_speed="20" tag="eye_monitor"></filter>
+        <filter type="basic_eye_monitor" eyeh_calibrated="eye_h_calibrated" eyev_calibrated="eye_v_calibrated" eye_state="saccade" width_samples="5" saccade_entry_speed="saccade_entry_speed" saccade_exit_speed="saccade_exit_speed" tag="eye_monitor"></filter>
     </filters>
     <optimizers tag="Optimizers"></optimizers>
     <experiment tag="New Experiment" full_name="" description="">
@@ -44,13 +54,12 @@
                             <action type="assignment" tag="Update is_fixating" variable="is_fixating" value="should_fixate"></action>
                         </action>
                         <action type="if" tag="If fixating ..." condition="is_fixating">
-                            <action type="assignment" tag="Update eye_h_raw" variable="eye_h_raw" value="rand(-0.5, 0.5)"></action>
-                            <action type="assignment" tag="Update eye_v_raw" variable="eye_v_raw" value="rand(-0.5, 0.5)"></action>
+                            <action type="assignment" tag="Update eye_h_raw" variable="eye_h_raw" value="rand(-eye_noise, eye_noise)"></action>
                         </action>
                         <action type="if" tag="If NOT fixating ..." condition="!is_fixating">
-                            <action type="assignment" tag="Update eye_h_raw" variable="eye_h_raw" value="10+rand(-0.5, 0.5)"></action>
-                            <action type="assignment" tag="Update eye_v_raw" variable="eye_v_raw" value="10+rand(-0.5, 0.5)"></action>
+                            <action type="assignment" tag="Update eye_h_raw" variable="eye_h_raw" value="10.0 + rand(-eye_noise, eye_noise)"></action>
                         </action>
+                        <action type="assignment" tag="Update eye_v_raw" variable="eye_v_raw" value="rand(-eye_noise, eye_noise)"></action>
                     </action>
                     <action tag="Queue fixation point" type="queue_stimulus" stimulus="fixation_point"></action>
                     <action tag="Update Stimulus Display" type="update_stimulus_display"></action>
@@ -61,12 +70,14 @@
                 </task_system_state>
                 <task_system_state tag="Wait for fixation" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Reset num_saccades" variable="num_saccades" value="0"></action>
                     <action type="assignment" tag="Start fixation" variable="should_fixate" value="1"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                     <transition type="conditional" tag="If Condition is True, Transition to ..." condition="eye_in_window &amp;&amp; !saccade" target="Fixation"></transition>
                 </task_system_state>
                 <task_system_state tag="Fixation" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assert" tag="Assert exactly one saccade" condition="num_saccades == 1" message="Detected $num_saccades saccades" stop_on_failure="0"></action>
                     <action type="assignment" tag="Toggle ttl_out" variable="ttl_out" value="!ttl_out"></action>
                     <action type="assignment" tag="Increment num_done" variable="num_done" value="num_done + 1"></action>
                     <action type="assignment" tag="Stop fixation" variable="should_fixate" value="0"></action>
