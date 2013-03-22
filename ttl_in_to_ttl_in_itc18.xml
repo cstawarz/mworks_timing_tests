@@ -1,0 +1,74 @@
+<?xml version="1.0" standalone="no"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices">
+        <iodevice tag="itc" priority="" type="itc18" alt="">
+            <iochannel tag="ttl_input_0" type="itc18_ttl_digital_input" variable="ttl_in_1" capability="ITC18_TTL_INPUT0" data_type="edge_any" direction="input" synchrony="hardware_timed_synchronous" range_min="0" range_max="5" resolution="1" update_interval="0.5ms" data_interval="0.5ms"></iochannel>
+            <iochannel tag="async_ttl_output_0" type="itc18_async_ttl_digital_output" variable="ttl_out" capability="ITC18_TTL_ASYCH_OUT00" data_type="digital" direction="output" synchrony="asynchronous" range_min="0" range_max="5" resolution="1" update_interval="3ms" data_interval="1ms"></iochannel>
+            <iochannel tag="ttl_input_1" type="itc18_ttl_digital_input" variable="ttl_in_2" capability="ITC18_TTL_INPUT1" data_type="edge_any" direction="input" synchrony="hardware_timed_synchronous" range_min="0" range_max="5" resolution="1" update_interval="0.5ms" data_interval="0.5ms"></iochannel>
+        </iodevice>
+    </io_devices>
+    <variables tag="Variables">
+        <variable tag="ttl_in_1" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="ttl_out" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="ttl_in_2" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="receive_time_1" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="receive_time_2" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="elapsed_time" scope="global" logging="when_changed" default_value="0" type="float"></variable>
+        <variable tag="num_repeats" scope="global" logging="when_changed" default_value="1000" type="integer"></variable>
+        <variable tag="num_done" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="start" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+        <variable tag="stop" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli"></stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="New Protocol" nsamples="10" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <task_system tag="New Task System" interruptible="YES">
+                <task_system_state tag="Begin State System" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Reset ttl_in_1" variable="ttl_in_1" value="1"></action>
+                    <action type="assignment" tag="Reset ttl_in_2" variable="ttl_in_2" value="0"></action>
+                    <action type="assignment" tag="Reset num_done" variable="num_done" value="0"></action>
+                    <action tag="Start IO Device" type="start_device_IO" device="itc"></action>
+                    <action type="assignment" tag="Reset ttl_out" variable="ttl_out" value="0"></action>
+                    <action type="assignment" tag="Start event collection" variable="start" value="!start"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 4" condition="!ttl_in_1" target="Wait for ttl_in_1"></transition>
+                </task_system_state>
+                <task_system_state tag="Wait for ttl_in_1" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assert" tag="Assert ttl_in_1 is zero" condition="!ttl_in_1" message="" stop_on_failure="0"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 2" condition="ttl_in_1" target="Set output and wait for ttl_in_2"></transition>
+                </task_system_state>
+                <task_system_state tag="Set output and wait for ttl_in_2" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Set receive_time_1" variable="receive_time_1" value="now()"></action>
+                    <action type="assignment" tag="Set ttl_out high" variable="ttl_out" value="1"></action>
+                    <action type="assert" tag="Assert ttl_in_2 is zero" condition="!ttl_in_2" message="" stop_on_failure="0"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 3" condition="ttl_in_2" target="Measure elapsed time"></transition>
+                </task_system_state>
+                <task_system_state tag="Measure elapsed time" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Set receive_time_2" variable="receive_time_2" value="now()"></action>
+                    <action type="assignment" tag="Compute elapsed time" variable="elapsed_time" value="(receive_time_2 - receive_time_1) / 1000.0"></action>
+                    <action type="assignment" tag="Increment num_done" variable="num_done" value="num_done + 1"></action>
+                    <action type="assignment" tag="Set ttl_out low" variable="ttl_out" value="0"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition type="conditional" tag="If Condition is True, Transition to ..." condition="num_done >= num_repeats" target="Exit State System"></transition>
+                    <transition type="conditional" tag="If Condition is True, Transition to ... 5" condition="!ttl_in_1" target="Wait for ttl_in_1"></transition>
+                </task_system_state>
+                <task_system_state tag="Exit State System" interruptible="YES">
+                    <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                    <action type="assignment" tag="Stop event collection" variable="stop" value="!stop"></action>
+                    <action tag="Stop IO Device" type="stop_device_IO" device="itc"></action>
+                    <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                    <transition tag="Return to parent task system" type="yield"></transition>
+                </task_system_state>
+            </task_system>
+        </protocol>
+    </experiment>
+</monkeyml>
