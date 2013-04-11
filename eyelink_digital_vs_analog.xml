@@ -4,18 +4,18 @@
         <iodevice tag="eyelink" type="eyelink" data_interval="1ms" tracker_ip="100.1.1.1" eye_rx="eye_rx_digital_raw" eye_ry="" eye_lx="" eye_ly="" eye_x="" eye_y="" eye_z="" href_rx="" href_ry="" href_lx="" href_ly="" pupil_rx="" pupil_ry="" pupil_lx="" pupil_ly="" pupil_size_r="" pupil_size_l="" eye_time="" tracking_dist="1024" alt="dummy_eyelink"></iodevice>
         <iodevice tag="dummy_eyelink" type="dummy" alt=""></iodevice>
         <iodevice type="nidaq" tag="nidaq" name="Dev1" update_interval="1ms" analog_input_data_interval="1ms" analog_output_data_interval="1ms" assume_multiplexed_adc="YES">
-          <iochannel type="nidaq_analog_input_voltage" tag="ai0" channel_number="0" range_min="-10.0" range_max="10.0" voltage="eye_rx_analog_raw"></iochannel>
+            <iochannel type="nidaq_analog_input_voltage" tag="ai0" channel_number="0" range_min="-10.0" range_max="10.0" voltage="eye_rx_analog_raw"></iochannel>
         </iodevice>
     </io_devices>
     <variables tag="Variables">
-        <variable tag="eye_rx_digital_raw" scope="global" logging="when_changed" default_value="0.0" type="float">
+        <variable tag="eye_rx_digital_raw" scope="global" logging="when_changed" default_value="-32768.0" type="float">
             <action type="assignment" tag="Set eye_rx_digital" variable="eye_rx_digital" value="eye_rx_digital_raw"></action>
         </variable>
-        <variable tag="eye_rx_analog_raw" scope="global" logging="when_changed" default_value="0.0" type="float">
+        <variable tag="eye_rx_analog_raw" scope="global" logging="when_changed" default_value="-32768.0" type="float">
             <action type="assignment" tag="Set eye_rx_analog" variable="eye_rx_analog" value="eye_rx_analog_raw"></action>
         </variable>
-        <variable tag="eye_rx_digital" scope="global" logging="when_changed" default_value="0.0" type="float"></variable>
-        <variable tag="eye_rx_analog" scope="global" logging="when_changed" default_value="0.0" type="float"></variable>
+        <variable tag="eye_rx_digital" scope="global" logging="when_changed" default_value="-32768.0" type="float"></variable>
+        <variable tag="eye_rx_analog" scope="global" logging="when_changed" default_value="-32768.0" type="float"></variable>
         <variable tag="done" scope="global" logging="when_changed" default_value="0" type="integer"></variable>
     </variables>
     <sounds tag="Sounds"></sounds>
