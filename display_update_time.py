@@ -38,7 +38,7 @@ def main():
         ps_values = [e.value for e in ps]
 
         vs_times = [(e.time - t0)/1000.0 for e in events
-                    if (e.code == rc['vsync_signal']) and (e.value == 1)]
+                    if (e.code == rc['vsync_signal']) and (e.value > 0)]
 
         sdu_times = [(e.time - t0)/1000.0 for e in events if
                      (e.code == rc['#stimDisplayUpdate']) and
