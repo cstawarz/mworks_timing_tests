@@ -1,9 +1,5 @@
 import sys
 
-import matplotlib
-matplotlib.rcParams['backend'] = 'Qt4Agg'
-matplotlib.rcParams['backend.qt4'] = 'PySide'
-
 from matplotlib import pyplot
 import numpy
 
