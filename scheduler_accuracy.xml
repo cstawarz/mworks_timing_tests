@@ -1,0 +1,77 @@
+<?xml version="1.0" standalone="no"?>
+<monkeyml version="1.0">
+    <io_devices tag="IO Devices"></io_devices>
+    <variables tag="Variables">
+        <variable tag="nrepeats" scope="global" logging="when_changed" exclude_from_data_file="NO" default_value="5" type="any"></variable>
+        <variable tag="nsamples" scope="global" logging="when_changed" exclude_from_data_file="NO" default_value="10000" type="any"></variable>
+        <variable tag="title" scope="global" logging="when_changed" exclude_from_data_file="NO" default_value="0" type="any"></variable>
+        <variable type="selection" tag="interval_selection" values="619us, 1367us, 2437us, 5171us, 9901us" selection="sequential" nsamples="1" sampling_method="cycles" advance_on_accept="YES" autoreset="YES"></variable>
+        <variable tag="interval" scope="global" logging="when_changed" exclude_from_data_file="NO" default_value="0" type="any"></variable>
+        <variable tag="start_time" scope="global" logging="when_changed" exclude_from_data_file="NO" default_value="0" type="any"></variable>
+        <variable tag="start" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="stop" scope="global" logging="when_changed" default_value="0" type="any"></variable>
+        <variable tag="i" scope="global" logging="when_changed" exclude_from_data_file="NO" default_value="0" type="any"></variable>
+    </variables>
+    <sounds tag="Sounds"></sounds>
+    <stimuli tag="Stimuli"></stimuli>
+    <filters tag="Filters"></filters>
+    <optimizers tag="Optimizers"></optimizers>
+    <experiment tag="New Experiment" full_name="" description="">
+        <protocol tag="Scheduled Action" nsamples="nrepeats" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <action type="assignment" tag="Reset i" variable="i" value="0"></action>
+            <action type="assignment" tag="Start collecting events" variable="start" value="!start"></action>
+            <action type="assignment" tag="Announce nsamples" variable="nsamples" value="nsamples"></action>
+            <action type="assignment" tag="Announce title" variable="title" value="&quot;Scheduled Action&quot;"></action>
+            <action type="assignment" tag="Set interval" variable="interval" value="interval_selection"></action>
+            <action type="assignment" tag="Store start time" variable="start_time" value="now()"></action>
+            <action type="schedule" tag="Schedule Actions" delay="interval" duration="interval" repeats="nsamples" cancel="">
+                <action type="assignment" tag="Assign Variable" variable="i" value="i+1"></action>
+            </action>
+            <action type="wait_for_condition" tag="Wait for Condition" condition="i &gt;= nsamples" timeout="nsamples * interval + 2s" timeout_message="" stop_on_timeout="YES"></action>
+            <action type="assignment" tag="Stop collecting events" variable="stop" value="!stop"></action>
+            <action tag="Advance interval selection" type="next_selection" selection="interval_selection"></action>
+        </protocol>
+        <protocol tag="Direct Wait" nsamples="nrepeats" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <action type="assignment" tag="Reset i" variable="i" value="1"></action>
+            <action type="assignment" tag="Start collecting events" variable="start" value="!start"></action>
+            <action type="assignment" tag="Announce nsamples" variable="nsamples" value="nsamples"></action>
+            <action type="assignment" tag="Announce title" variable="title" value="&quot;Direct Wait&quot;"></action>
+            <action type="assignment" tag="Set interval" variable="interval" value="interval_selection"></action>
+            <action type="assignment" tag="Store start time" variable="start_time" value="now()"></action>
+            <action type="set_timebase" tag="Set Timebase" timebase="MyTimebase"></action>
+            <trial tag="New Trial" nsamples="nsamples" sampling_method="cycles" selection="sequential" interruptible="YES">
+                <action type="wait" tag="Wait" duration="i * interval" duration_units="us" timebase="MyTimebase"></action>
+                <action type="assignment" tag="Assign Variable" variable="i" value="i+1"></action>
+            </trial>
+            <action type="assignment" tag="Stop collecting events" variable="stop" value="!stop"></action>
+            <action tag="Advance interval selection" type="next_selection" selection="interval_selection"></action>
+        </protocol>
+        <protocol tag="Timer Wait" nsamples="nrepeats" sampling_method="cycles" selection="sequential" interruptible="YES">
+            <action type="assignment" tag="Reset i" variable="i" value="1"></action>
+            <action type="assignment" tag="Start collecting events" variable="start" value="!start"></action>
+            <action type="assignment" tag="Announce nsamples" variable="nsamples" value="nsamples"></action>
+            <action type="assignment" tag="Announce title" variable="title" value="&quot;Timer Wait&quot;"></action>
+            <action type="assignment" tag="Set interval" variable="interval" value="interval_selection"></action>
+            <action type="assignment" tag="Store start time" variable="start_time" value="now()"></action>
+            <action type="set_timebase" tag="Set Timebase" timebase="MyTimebase"></action>
+            <trial tag="New Trial" nsamples="nsamples" sampling_method="cycles" selection="sequential" interruptible="YES">
+                <task_system tag="New Task System" interruptible="YES">
+                    <task_system_state tag="Begin" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="start_timer" tag="Start Timer" timer="MyTimer" timebase="MyTimebase" duration="i * interval" duration_units="us"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition type="timer_expired" tag="If Timer Expired, Transition to ..." target="End" timer="MyTimer"></transition>
+                    </task_system_state>
+                    <task_system_state tag="End" interruptible="YES">
+                        <action_marker _unmoveable="1" tag="Actions"></action_marker>
+                        <action type="assignment" tag="Assign Variable" variable="i" value="i+1"></action>
+                        <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
+                        <transition tag="Return to parent task system" type="yield"></transition>
+                    </task_system_state>
+                </task_system>
+            </trial>
+            <action type="assignment" tag="Stop collecting events" variable="stop" value="!stop"></action>
+            <action tag="Advance interval selection" type="next_selection" selection="interval_selection"></action>
+        </protocol>
+    </experiment>
+</monkeyml>
