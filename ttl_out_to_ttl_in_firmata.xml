@@ -1,9 +1,9 @@
 <?xml version="1.0" standalone="no"?>
 <monkeyml version="1.0">
     <io_devices tag="IO Devices">
-        <iodevice type="nidaq" tag="nidaq" name="Dev1" update_interval="1.5ms" analog_input_data_interval="1.5ms" analog_output_data_interval="1.5ms" assume_multiplexed_adc="YES">
-            <iochannel type="nidaq_digital_output" tag="port2" port_number="2" num_lines_in_port="8" line0="ttl_out" line1="" line2="" line3="" line4="" line5="" line6="" line7="" line8="" line9="" line10="" line11="" line12="" line13="" line14="" line15="" line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23="" line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""></iochannel>
-            <iochannel type="nidaq_digital_input" tag="port1" port_number="1" num_lines_in_port="8" line0="ttl_in" line1="" line2="" line3="" line4="" line5="" line6="" line7="" line8="" line9="" line10="" line11="" line12="" line13="" line14="" line15="" line16="" line17="" line18="" line19="" line20="" line21="" line22="" line23="" line24="" line25="" line26="" line27="" line28="" line29="" line30="" line31=""></iochannel>
+        <iodevice type="firmata" tag="firmata" serial_port="">
+            <iochannel type="firmata_digital_output" tag="pin6" pin_number="6" value="ttl_out"></iochannel>
+            <iochannel type="firmata_digital_input" tag="pin2" pin_number="2" value="ttl_in"></iochannel>
         </iodevice>
     </io_devices>
     <variables tag="Variables">
@@ -29,7 +29,7 @@
                     <action type="assignment" tag="Reset ttl_out" variable="ttl_out" value="0"></action>
                     <action type="assignment" tag="Reset ttl_in" variable="ttl_in" value="0"></action>
                     <action type="assignment" tag="Reset num_done" variable="num_done" value="0"></action>
-                    <action tag="Start IO Device" type="start_device_IO" device="nidaq"></action>
+                    <action tag="Start IO Device" type="start_device_IO" device="firmata"></action>
                     <action type="assignment" tag="Initialize send_time" variable="send_time" value="now()"></action>
                     <action type="assignment" tag="Start event collection" variable="start" value="!start"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
@@ -54,7 +54,7 @@
                 <task_system_state tag="Exit State System" interruptible="YES">
                     <action_marker _unmoveable="1" tag="Actions"></action_marker>
                     <action type="assignment" tag="Stop event collection" variable="stop" value="!stop"></action>
-                    <action tag="Stop IO Device" type="stop_device_IO" device="nidaq"></action>
+                    <action tag="Stop IO Device" type="stop_device_IO" device="firmata"></action>
                     <transition_marker _unmoveable="1" tag="Transitions"></transition_marker>
                     <transition tag="Return to parent task system" type="yield"></transition>
                 </task_system_state>
