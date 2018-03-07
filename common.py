@@ -9,6 +9,8 @@ from mworks.conduit import IPCAccumClientConduit
 
 class Conduit(IPCAccumClientConduit):
 
+    update_interval = 1  # seconds
+
     def __init__(self, resource_name, event_handler, event_names):
         super(IPCAccumClientConduit, self).__init__(resource_name,
                                                     'start',
@@ -16,27 +18,29 @@ class Conduit(IPCAccumClientConduit):
                                                     event_names)
         self.event_handler = event_handler
         self._queue = Queue.Queue()
-        self._main_loop_running = False
 
     def _post_events(self, events):
         if events:
-            if self._main_loop_running:
-                self._stop_main_loop()
             self._queue.put(events)
 
     def run(self):
         self.initialize()
         try:
             self.register_bundle_callback(self._post_events)
+
             pyplot.cla()
             pyplot.draw()
+            canvas = pyplot.gcf().canvas
+            canvas.manager.show()
+
             while True:
-                self._main_loop_running = True
                 try:
-                    self._start_main_loop()
-                finally:
-                    self._main_loop_running = False
-                self.event_handler(self, self._queue.get())
+                    events = self._queue.get(timeout=self.update_interval)
+                    self.event_handler(self, events)
+                except Queue.Empty:
+                    pass
+                # Run the event loop, so that the plot is visible
+                canvas.start_event_loop(timeout=self.update_interval)
         finally:
             self.finalize()
 
