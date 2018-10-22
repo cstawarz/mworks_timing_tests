@@ -9,7 +9,7 @@ from mworks.conduit import IPCAccumClientConduit
 
 class Conduit(IPCAccumClientConduit):
 
-    update_interval = 1  # seconds
+    update_interval = 0.5  # seconds
 
     def __init__(self, resource_name, event_handler, event_names):
         super(IPCAccumClientConduit, self).__init__(resource_name,

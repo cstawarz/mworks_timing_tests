@@ -12,6 +12,7 @@ def plot_events(conduit, events):
     sdu_times = [(e.time - t0)/1000.0 for e in events if
                  (e.code == rc['#stimDisplayUpdate']) and
                  isinstance(e.value, list) and
+                 len(e.value) > 0 and
                  isinstance(e.value[0], dict) and
                  (e.value[0]['name'] == 'frame_list') and
                  isinstance(e.value[0]['current_stimulus'], dict) and
@@ -27,6 +28,8 @@ def plot_events(conduit, events):
     pyplot.plot(ps_times, ps_values)
 
     y_min, y_max = pyplot.gca().get_ylim()
+    y_min *= 1.01
+    y_max *= 0.99
     pyplot.vlines(sdu_times, y_min, y_max, color='red')
     if skip_times:
         pyplot.vlines(skip_times, y_min, y_max, color='green')

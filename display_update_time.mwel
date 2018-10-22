@@ -1,0 +1,35 @@
+stimulus_display (
+    background_color = 0,0,0
+    )
+
+
+frame_list frame_list (
+    repeats = 10
+    autoplay = true
+    ) {
+    blank_screen white_screen (color = 1,1,1)
+    blank_screen black_screen (color = 0,0,0)
+}
+
+
+var photodiode_signal = 0
+var start = false
+var stop = false
+
+
+protocol 'Display Update Time' {
+    wait (1s)
+
+    start = !start
+    wait (50ms)
+
+    queue_stimulus (frame_list)
+    update_display ()
+    wait (300ms)
+
+    dequeue_stimulus (frame_list)
+    update_display ()
+    wait (100ms)
+
+    stop = !stop
+}
