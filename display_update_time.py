@@ -9,9 +9,6 @@ def plot_events(conduit, events):
     ps_times = [(e.time - t0)/1000.0 for e in ps]
     ps_values = [e.value for e in ps]
 
-    vs_times = [(e.time - t0)/1000.0 for e in events
-                if (e.code == rc['vsync_signal']) and (e.value > 0)]
-
     sdu_times = [(e.time - t0)/1000.0 for e in events if
                  (e.code == rc['#stimDisplayUpdate']) and
                  isinstance(e.value, list) and
@@ -30,12 +27,11 @@ def plot_events(conduit, events):
     pyplot.plot(ps_times, ps_values)
 
     y_min, y_max = pyplot.gca().get_ylim()
-    pyplot.vlines(vs_times, y_min, y_max)
     pyplot.vlines(sdu_times, y_min, y_max, color='red')
     if skip_times:
         pyplot.vlines(skip_times, y_min, y_max, color='green')
 
-    pyplot.title('Display update timing (CRT @ 60Hz)')
+    pyplot.title('Display update timing (LCD @ 60Hz)')
     pyplot.xlabel('Elapsed time (ms)')
     pyplot.ylabel('Photodiode voltage')
     
@@ -45,6 +41,5 @@ def plot_events(conduit, events):
 if __name__ == '__main__':
     from common import Conduit
     Conduit.main(plot_events, ['photodiode_signal',
-                               'vsync_signal',
                                '#stimDisplayUpdate',
                                '#announceMessage'])
