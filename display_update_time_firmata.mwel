@@ -1,0 +1,12 @@
+%include display_update_time
+
+
+firmata firmata (
+    data_interval = 1ms
+    autostart = true
+    ) {
+    firmata_analog_input (
+        pin_number = a5
+        value = photodiode_signal
+        )
+}
