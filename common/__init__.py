@@ -1,6 +1,5 @@
 import queue
 import sys
-sys.path.insert(0, '/Library/Application Support/MWorks/Scripting/Python')
 
 from matplotlib import pyplot
 
