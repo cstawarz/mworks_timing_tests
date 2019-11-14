@@ -1,0 +1,93 @@
+%define nrepeats = 5
+var nsamples = 10000
+var title = ''
+
+selection interval_selection (
+    values = 619us, 1367us, 2437us, 5171us, 9901us
+    advance_on_accept = YES
+    autoreset = YES
+    )
+
+var interval = 0
+var start_time = 0
+var start = 0
+var stop = 0
+var i = 0
+
+
+%define begin_protocol (title)
+    i = 1
+    start = !start  // Start collecting events
+    nsamples = nsamples  // Announce nsamples
+    title = title  // Announce title
+    interval = interval_selection
+    start_time = now()
+    set_timebase (timebase)
+%end
+
+
+%define end_protocol ()
+    stop = !stop  // Stop collecting events
+    next_selection (interval_selection)
+%end
+
+
+protocol 'Scheduled Action' (nsamples = nrepeats) {
+    begin_protocol ('Scheduled Action')
+
+    schedule (
+        delay = interval
+        duration = interval
+        repeats = nsamples
+        ) {
+        i += 1
+    }
+    wait_for_condition (
+        condition = i > nsamples
+        timeout = nsamples * interval + 2s
+        )
+
+    end_protocol ()
+}
+
+
+protocol 'Direct Wait' (nsamples = nrepeats) {
+    begin_protocol ('Direct Wait')
+
+    trial (nsamples = nsamples) {
+        wait (
+            duration = i * interval
+            timebase = timebase
+            )
+        i += 1
+    }
+
+    end_protocol ()
+}
+
+
+protocol 'Timer Wait' (nsamples = nrepeats) {
+    begin_protocol ('Timer Wait')
+
+    trial (nsamples = nsamples) {
+        task {
+            state Begin {
+                start_timer (
+                    timer = timer
+                    timebase = timebase
+                    duration = i * interval
+                    )
+                goto (
+                    target = End
+                    when = timer_expired(timer)
+                    )
+            }
+            state End {
+                i += 1
+                yield ()
+            }
+        }
+    }
+
+    end_protocol ()
+}
