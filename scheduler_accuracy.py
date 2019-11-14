@@ -33,12 +33,12 @@ def plot_diffs(conduit, events):
     pyplot.xlabel('Actual - Expected (us)')
     pyplot.draw()
 
-    print 'interval =', interval
-    print 'min =', diffs.min()
-    print 'max =', diffs.max()
-    print 'mean =', diffs.mean()
-    print 'max-min =', diffs.max() - diffs.min()
-    print
+    print('interval =', interval)
+    print('min =', diffs.min())
+    print('max =', diffs.max())
+    print('mean =', diffs.mean())
+    print('max-min =', diffs.max() - diffs.min())
+    print()
     sys.stdout.flush()
 
     pyplot.figure(2)

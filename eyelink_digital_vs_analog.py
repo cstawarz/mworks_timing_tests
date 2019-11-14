@@ -26,7 +26,7 @@ def plot_position_changes(event_file, varname, color, noise_thresh=0.0):
     for index in nonzeros:
         if numpy.all(delta[index-100:index] <= noise_thresh):
             onsets.append(index)
-    print len(onsets)
+    print(len(onsets))
     onset_times = time[onsets]
     
     pyplot.vlines(onset_times, 0, 1.1, color=color, linestyle='dashed')

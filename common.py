@@ -1,4 +1,4 @@
-import Queue
+import queue
 import sys
 sys.path.insert(0, '/Library/Application Support/MWorks/Scripting/Python')
 
@@ -12,12 +12,9 @@ class Conduit(IPCAccumClientConduit):
     update_interval = 0.5  # seconds
 
     def __init__(self, resource_name, event_handler, event_names):
-        super(IPCAccumClientConduit, self).__init__(resource_name,
-                                                    'start',
-                                                    'stop',
-                                                    event_names)
+        super().__init__(resource_name, 'start', 'stop', event_names)
         self.event_handler = event_handler
-        self._queue = Queue.Queue()
+        self._queue = queue.Queue()
 
     def _post_events(self, events):
         if events:
@@ -37,7 +34,7 @@ class Conduit(IPCAccumClientConduit):
                 try:
                     events = self._queue.get(timeout=self.update_interval)
                     self.event_handler(self, events)
-                except Queue.Empty:
+                except queue.Empty:
                     pass
                 # Run the event loop, so that the plot is visible
                 canvas.start_event_loop(timeout=self.update_interval)
