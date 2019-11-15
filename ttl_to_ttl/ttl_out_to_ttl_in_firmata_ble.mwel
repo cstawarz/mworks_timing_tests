@@ -1,0 +1,13 @@
+%include ttl_out_to_ttl_in
+
+
+firmata daq (bluetooth_local_name = FIRMATA) {
+    firmata_digital_output (
+        pin_number = 12
+        value = ttl_out
+        )
+    firmata_digital_input (
+        pin_number = 13
+        value = ttl_in
+        )
+}

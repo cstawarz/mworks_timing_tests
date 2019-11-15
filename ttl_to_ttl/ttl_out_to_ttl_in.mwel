@@ -1,0 +1,50 @@
+var ttl_out = 0
+var ttl_in = 0
+var send_time = 0
+var receive_time = 0
+var elapsed_time = 0.0
+var num_repeats = 1000
+var num_done = 0
+var start = false
+var stop = false
+
+
+protocol 'TTL Out to TTL In' (nsamples = 10) {
+    task {
+        state Begin {
+            ttl_out = 0
+            ttl_in = 0
+            num_done = 0
+            start_device_io (daq)
+            send_time = now()
+            start = !start
+            goto ('Send TTL')
+        }
+
+        state 'Send TTL' {
+            ttl_out = !ttl_out
+            goto (
+                target = 'TTL Received'
+                when = ttl_in == ttl_out
+                )
+        }
+
+        state 'TTL Received' {
+            receive_time = now()
+            elapsed_time = (receive_time - send_time) / 1000.0
+            send_time = receive_time
+            num_done += 1
+            goto (
+                target = End
+                when = num_done >= num_repeats
+                )
+            goto ('Send TTL')
+        }
+
+        state End {
+            stop = !stop
+            stop_device_io (daq)
+            yield ()
+        }
+    }
+}

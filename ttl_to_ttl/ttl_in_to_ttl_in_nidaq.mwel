@@ -1,0 +1,21 @@
+%include ttl_in_to_ttl_in
+
+
+nidaq daq (
+    name = Dev1
+    update_interval = 1.5ms
+    analog_input_data_interval = 1.5ms
+    analog_output_data_interval = 1.5ms
+    ) {
+    nidaq_digital_input (
+        port_number = 1
+        num_lines_in_port = 8
+        line0 = ttl_in_1
+        line1 = ttl_in_2
+        )
+    nidaq_digital_output (
+        port_number = 0
+        num_lines_in_port = 8
+        line0 = ttl_out
+        )
+}

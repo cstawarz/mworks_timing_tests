@@ -1,0 +1,67 @@
+var ttl_in_1 = 0
+var ttl_out = 0
+var ttl_in_2 = 0
+var receive_time_1 = 0
+var receive_time_2 = 0
+var elapsed_time = 0.0
+var num_repeats = 1000
+var num_done = 0
+var start = false
+var stop = false
+
+
+protocol 'TTL In to TTL In' (nsamples = 10) {
+    task {
+        state Begin {
+            ttl_in_1 = 1
+            ttl_in_2 = 0
+            num_done = 0
+            start_device_io (daq)
+            ttl_out = 0
+            start = !start
+            goto (
+                target = 'Wait for ttl_in_1'
+                when = !ttl_in_1
+                )
+        }
+
+        state 'Wait for ttl_in_1' {
+            assert (!ttl_in_1)
+            goto (
+                target = 'Set output and wait for ttl_in_2'
+                when = ttl_in_1
+                )
+        }
+
+        state 'Set output and wait for ttl_in_2' {
+            receive_time_1 = now()
+            ttl_out = 1
+            assert (!ttl_in_2)
+            goto (
+                target = 'Measure elapsed time'
+                when = ttl_in_2
+                )
+        }
+
+        state 'Measure elapsed time' {
+            receive_time_2 = now()
+            elapsed_time = (receive_time_2 - receive_time_1) / 1000.0
+            num_done += 1
+            ttl_out = 0
+            goto (
+                target = End
+                when = num_done >= num_repeats
+                )
+            goto (
+                target = 'Wait for ttl_in_1'
+                when = !ttl_in_1
+                )
+        }
+
+        state End {
+            stop = !stop
+            stop_device_io (daq)
+            yield ()
+        }
+    }
+}
