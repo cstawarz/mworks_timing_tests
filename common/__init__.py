@@ -19,21 +19,13 @@ class Conduit(IPCAccumClientConduit):
             self._stop_main_loop()
 
     def run(self):
-        self.initialize()
-        try:
-            self.register_bundle_callback(self._post_events)
-            pyplot.cla()
-            pyplot.draw()
-            while True:
-                # This will execute until _stop_main_loop is called
-                pyplot.show()
-                try:
-                    events = self._queue.get(block=False)
-                    self.event_handler(self, events)
-                except queue.Empty:
-                    pass
-        finally:
-            self.finalize()
+        self.register_bundle_callback(self._post_events)
+        pyplot.cla()
+        pyplot.draw()
+        while True:
+            # show will execute until _stop_main_loop is called
+            pyplot.show()
+            self.event_handler(self, self._queue.get())
 
     @classmethod
     def main(cls, event_handler, event_names):
@@ -44,4 +36,5 @@ class Conduit(IPCAccumClientConduit):
             # Server-side conduit: resource name is set in the experiment
             resource_name = 'server_conduit'
 
-        cls(resource_name, event_handler, event_names).run()
+        with cls(resource_name, event_handler, event_names) as conduit:
+            conduit.run()
