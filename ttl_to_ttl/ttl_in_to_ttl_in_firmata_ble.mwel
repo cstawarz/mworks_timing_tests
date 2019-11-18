@@ -1,0 +1,17 @@
+%include ttl_in_to_ttl_in
+
+
+firmata daq (bluetooth_local_name = 'MWORKS-FIRMATA-BLE-TEST') {
+    firmata_digital_input (
+        pin_number = a3
+        value = ttl_in_1
+        )
+    firmata_digital_output (
+        pin_number = 12
+        value = ttl_out
+        )
+    firmata_digital_input (
+        pin_number = 13
+        value = ttl_in_2
+        )
+}
