@@ -9,7 +9,7 @@ def report_elapsed_times(conduit, events):
     times += [e.data for e in events]
     pyplot.cla()
     pyplot.hist(times, bins=100)
-    pyplot.title('TTL to TLL (%d trials)' % len(times))
+    pyplot.title('TTL In to TLL In (%d trials)' % len(times))
     pyplot.xlabel('Elapsed time (ms)')
     pyplot.draw()
 
