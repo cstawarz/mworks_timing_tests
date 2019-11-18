@@ -6,7 +6,7 @@ firmata firmata (
     autostart = true
     ) {
     firmata_analog_input (
-        pin_number = a5
+        pin_number = a3
         value = photodiode_signal
         )
 }
